@@ -1,5 +1,6 @@
 'use strict';
 var filename = window.location.pathname;
+var temp_id
 // alert(filename);
 // Initializes FriendlyChat.
 function FriendlyChat() {
@@ -110,19 +111,19 @@ FriendlyChat.prototype.saveMessage = function(e) {
 
 function getCurrentTime(){
   var d = new Date();
-  var date = d.getDate();
-  var month = d.getMonth();
-  var year = d.getFullYear();
-  var hour = d.getHours();
-  var minute = d.getMinutes();
+  // var date = d.getDate();
+  // var month = d.getMonth();
+  // var year = d.getFullYear();
+  // var hour = d.getHours();
+  // var minute = d.getMinutes();
 
-  if(minute < 10) {
-    minute = ""+0+minute; //+""casts minutes to a string.
-  }
+  // if(minute < 10) {
+  //   minute = ""+0+minute; //+""casts minutes to a string.
+  // }
 
-  var second = d.getSeconds();
-  var timestamp = date + "/" + month + "/" + year + " " + hour + ":" + minute
-  return timestamp
+  // var second = d.getSeconds();
+  // var timestamp = date + "/" + month + "/" + year + " " + hour + ":" + minute
+  return d.toString()
 }
 
 // Sets the URL of the given img element with the URL of the image stored in Cloud Storage.
@@ -280,6 +281,7 @@ if(filename == '/questionPost.html'){
       '<div class="spacing"><div class="pic"></div></div>' +
       '<div class="message"></div>' +
       '<div class="name"></div>' +
+      '<div class="timeago" style="float: right;"></div>' +
     '</div>';
 }
 
@@ -324,13 +326,10 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
     messageElement.innerHTML = '';
     messageElement.appendChild(image);
   }
-  if(time == null){
-    time = ''+0;
-  }
-  var timeElement = div.querySelector('.timeago');
-  timeElement.textContent = "July 17, 2008";
-  timeElement.setAttribute('datetime','2008-07-17T09:24:17Z');
-  jQuery(".timeago").timeago();
+
+  // Set time
+  var d = new Date(time)
+  $("#" + key).find('.timeago').timeago("update", d);
 
   // Show the card fading-in.
   setTimeout(function() {div.classList.add('visible')}, 1);
