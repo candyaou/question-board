@@ -328,8 +328,8 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
   }
 
   // Set time
-  var d = new Date(time)
-  $("#" + key).find('.timeago').timeago("update", d);
+  var d = new Date(time).toISOString()
+  $("#" + key + " > .timeago").attr('datetime', d).timeago()
 
   // Show the card fading-in.
   setTimeout(function() {div.classList.add('visible')}, 1);
