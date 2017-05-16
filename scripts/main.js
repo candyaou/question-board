@@ -318,13 +318,40 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
     // Replace all line breaks by <br>.
     messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
   } else if (imageUri) { // If the message is an image.
-    var image = document.createElement('img');
-    image.addEventListener('load', function() {
+    var modal_image = document.createElement('img');
+    var act_image = document.createElement('img');
+    var modal = document.createElement('div')
+    var bg = document.createElement('div')
+    var con = document.createElement('div')
+    var button = document.createElement('button')
+    modal.setAttribute('class', 'modal');
+    bg.setAttribute('class', 'modal-background');
+    con.setAttribute('class', 'modal-content');
+    button.setAttribute('class', 'modal-close');
+
+    act_image.addEventListener("click", function(){
+      $("#" + key + " > .message > .modal").addClass('is-active')
+    });
+    button.addEventListener("click", function(){
+      $("#" + key + " > .message > .modal").removeClass('is-active')
+    });
+
+    act_image.addEventListener('load', function() {
       this.messageList.scrollTop = this.messageList.scrollHeight;
     }.bind(this));
-    this.setImageUrl(imageUri, image);
+    modal_image.addEventListener('load', function() {
+      this.messageList.scrollTop = this.messageList.scrollHeight;
+    }.bind(this));
+    this.setImageUrl(imageUri, act_image);
+    this.setImageUrl(imageUri, modal_image);
     messageElement.innerHTML = '';
-    messageElement.appendChild(image);
+
+    con.appendChild(modal_image)
+    modal.appendChild(bg)
+    modal.appendChild(con)
+    modal.appendChild(button)
+    messageElement.appendChild(modal)
+    messageElement.appendChild(act_image)
   }
 
   // Set time

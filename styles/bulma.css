@@ -4009,6 +4009,7 @@ input[type="submit"].button {
   right: 20px;
   top: 20px;
   width: 40px;
+  margin-top: 5%;
 }
 
 .modal-close:before, .modal-close:after {
