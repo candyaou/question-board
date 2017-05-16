@@ -325,6 +325,7 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
     var con = document.createElement('div')
     var button = document.createElement('button')
     modal.setAttribute('class', 'modal');
+    modal_image.setAttribute('style','max-width: 100%;max-height: 100%;');
     bg.setAttribute('class', 'modal-background');
     con.setAttribute('class', 'modal-content');
     button.setAttribute('class', 'modal-close');
