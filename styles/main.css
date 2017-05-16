@@ -132,7 +132,7 @@ main, #messages-card {
   display: flex;
   flex-direction: row;
   top: 22px;
-  width: 100%;
+  width: 50%;
   right: 0;
   padding-left: 10px;
   justify-content: flex-end;
