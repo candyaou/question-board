@@ -70,7 +70,7 @@ FriendlyChat.prototype.loadMessages = function() {
   // Loads the last 12 messages and listen for new ones.
   var setMessage = function(data) {
     var val = data.val();
-    this.displayMessage(data.key, val.name, val.text, val.photoUrl, val.imageUrl);
+    this.displayMessage(data.key, val.name, val.text, val.photoUrl, val.imageUrl, val.time);
   }.bind(this);
   this.messagesRef.limitToLast(12).on('child_added', setMessage);
   this.messagesRef.limitToLast(12).on('child_changed', setMessage);
@@ -96,7 +96,8 @@ FriendlyChat.prototype.saveMessage = function(e) {
     this.messagesRef.push({
       name: currentUser.displayName,
       text: this.messageInput.value,
-      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png'
+      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png',
+      time: getCurrentTime()
     }).then(function() {
       // Clear message text field and SEND button state.
       FriendlyChat.resetMaterialTextfield(this.messageInput);
@@ -106,6 +107,23 @@ FriendlyChat.prototype.saveMessage = function(e) {
     });
   }
 };
+
+function getCurrentTime(){
+  var d = new Date();
+  var date = d.getDate();
+  var month = d.getMonth();
+  var year = d.getFullYear();
+  var hour = d.getHours();
+  var minute = d.getMinutes();
+
+  if(minute < 10) {
+    minute = ""+0+minute; //+""casts minutes to a string.
+  }
+
+  var second = d.getSeconds();
+  var timestamp = date + "/" + month + "/" + year + " " + hour + ":" + minute
+  return timestamp
+}
 
 // Sets the URL of the given img element with the URL of the image stored in Cloud Storage.
 FriendlyChat.prototype.setImageUrl = function(imageUri, imgElement) {
@@ -146,7 +164,8 @@ FriendlyChat.prototype.saveImageMessage = function(event) {
     this.messagesRef.push({
       name: currentUser.displayName,
       imageUrl: FriendlyChat.LOADING_IMAGE_URL,
-      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png'
+      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png',
+      time: getCurrentTime()
     }).then(function(data) {
 
       // Upload the image to Cloud Storage.
@@ -251,6 +270,8 @@ if(filename == '/'){
       '<div class="spacing"><div class="pic"></div></div>' +
       '<div class="message"></div>' +
       '<div class="name"></div>' +
+      '<div class="timeago" style="float: right;"></div>' +
+      // '<div class="timeago" datetime="2008-07-17T09:24:17Z">July 17, 2008</div>' +
     '</a>';
 }
 if(filename == '/questionPost.html'){
@@ -267,7 +288,7 @@ if(filename == '/questionPost.html'){
 FriendlyChat.LOADING_IMAGE_URL = 'https://www.google.com/images/spin-32.gif';
 
 // Displays a Message in the UI.
-FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri) {
+FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri, time) {
   var div = document.getElementById(key);
   // If an element for that message does not exists yet we create it.
   if (!div) {
@@ -303,6 +324,14 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
     messageElement.innerHTML = '';
     messageElement.appendChild(image);
   }
+  if(time == null){
+    time = ''+0;
+  }
+  var timeElement = div.querySelector('.timeago');
+  timeElement.textContent = "July 17, 2008";
+  timeElement.setAttribute('datetime','2008-07-17T09:24:17Z');
+  jQuery(".timeago").timeago();
+
   // Show the card fading-in.
   setTimeout(function() {div.classList.add('visible')}, 1);
   this.messageList.scrollTop = this.messageList.scrollHeight;
