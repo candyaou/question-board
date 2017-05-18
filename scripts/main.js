@@ -363,6 +363,11 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
     else if(newMessage>0)
     	messageElement.innerHTML += ' <b>' + newMessage + ' new message</b>';
 
+    //Added by IQ - Auto Link
+    var urlRegex = /(?![^<]*>|[^<>]*<\/)((https?:)\/\/[a-z0-9&#=.\/\-?_]+)/gi; 
+	var link = '<a href="$1" target="_blank">$1</a>'; 
+	messageElement.innerHTML = messageElement.innerHTML.replace(urlRegex, link);
+
   } else if (imageUri) { // If the message is an image.
     var modal_image = document.createElement('img');
     var act_image = document.createElement('img');
