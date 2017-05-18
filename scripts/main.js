@@ -73,17 +73,21 @@ FriendlyChat.prototype.loadMessages = function() {
     var val = data.val();
     //Added by IQ - Update Comment Count
     if(this.messagesRef.key != "messages") {
-    	//Update Comment Count for Post Message
-    	this.database.ref('messages/'+this.messagesRef.key+'/comments_count').set(this.messageList.children.length);
     	this.displayMessage(data.key, val.name, val.text, val.photoUrl, val.imageUrl, val.time);
+    	//Update Comment Count for Post Message
+    	this.database.ref('messages/'+this.messagesRef.key+'/comments_count').set(this.messageList.children.length-1);
+    	setCookie(this.messagesRef.key,this.messageList.children.length-1,365);
     }
     else{
     	// Show comment count in Post Message
-    	this.displayMessage(data.key, val.name, val.text + ' (' + val.comments_count + ')', val.photoUrl, val.imageUrl, val.time);
+    	var hasRead = getCookie(data.key);
+    	var contentText = val.text + ' (' + val.comments_count + ')';
+    	this.displayMessage(data.key, val.name, contentText, val.photoUrl, val.imageUrl, val.time, (val.comments_count-hasRead));
     }
   }.bind(this);
-  this.messagesRef.limitToLast(12).on('child_added', setMessage);
-  this.messagesRef.limitToLast(12).on('child_changed', setMessage);
+  // Edited by IQ - No Limit
+  this.messagesRef.on('child_added', setMessage);
+  this.messagesRef.on('child_changed', setMessage);
 };
 
 function getQueryVariable(variable){
@@ -300,7 +304,8 @@ if(filename == '/questionPost.html'){
 FriendlyChat.LOADING_IMAGE_URL = 'https://www.google.com/images/spin-32.gif';
 
 // Displays a Message in the UI.
-FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri, time) {
+// Edited by IQ - Add newMessage Parameter
+FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageUri, time, newMessage=0) {
   var div = document.getElementById(key);
   // If an element for that message does not exists yet we create it.
   if (!div) {
@@ -327,6 +332,11 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
     messageElement.textContent = text;
     // Replace all line breaks by <br>.
     messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
+    //Added by IQ - Show new-message Notification
+    if(newMessage>1)
+    	messageElement.innerHTML += ' <b>' + newMessage + ' new messages</b>';
+    else if(newMessage>0)
+    	messageElement.innerHTML += ' <b>' + newMessage + ' new message</b>';
   } else if (imageUri) { // If the message is an image.
     var modal_image = document.createElement('img');
     var act_image = document.createElement('img');
@@ -397,3 +407,29 @@ FriendlyChat.prototype.checkSetup = function() {
 window.onload = function() {
   window.friendlyChat = new FriendlyChat();
 };
+
+
+//Added by IQ - Set Cookie
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+ d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+//Added by IQ - Get Cookie
+function getCookie(cname) {
+    var name = cname + "=";
+    var decodedCookie = decodeURIComponent(document.cookie);
+    var ca = decodedCookie.split(';');
+    for(var i = 0; i <ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return parseInt(c.substring(name.length, c.length));
+        }
+    }
+    return 0;
+}
