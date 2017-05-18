@@ -381,7 +381,14 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
 
   // Show the card fading-in.
   setTimeout(function() {div.classList.add('visible')}, 1);
-  this.messageList.scrollTop = this.messageList.scrollHeight - this.messageList.scrollTop - this.messageList.scrollHeight;
+
+  // Added by IQ - Scroll to bottom when in comment page
+  if(this.messagesRef.key != "messages") {
+  	this.messageList.scrollTop = this.messageList.scrollHeight; 
+  }
+  else{
+  	this.messageList.scrollTop = this.messageList.scrollHeight - this.messageList.scrollTop - this.messageList.scrollHeight;
+  }
   this.messageInput.focus();
 };
 
