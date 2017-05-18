@@ -71,7 +71,16 @@ FriendlyChat.prototype.loadMessages = function() {
   // Loads the last 12 messages and listen for new ones.
   var setMessage = function(data) {
     var val = data.val();
-    this.displayMessage(data.key, val.name, val.text, val.photoUrl, val.imageUrl, val.time);
+    //Added by IQ - Update Comment Count
+    if(this.messagesRef.key != "messages") {
+    	//Update Comment Count for Post Message
+    	this.database.ref('messages/'+this.messagesRef.key+'/comments_count').set(this.messageList.children.length);
+    	this.displayMessage(data.key, val.name, val.text, val.photoUrl, val.imageUrl, val.time);
+    }
+    else{
+    	// Show comment count in Post Message
+    	this.displayMessage(data.key, val.name, val.text + ' (' + val.comments_count + ')', val.photoUrl, val.imageUrl, val.time);
+    }
   }.bind(this);
   this.messagesRef.limitToLast(12).on('child_added', setMessage);
   this.messagesRef.limitToLast(12).on('child_changed', setMessage);
@@ -98,6 +107,7 @@ FriendlyChat.prototype.saveMessage = function(e) {
       name: currentUser.displayName,
       text: this.messageInput.value,
       photoUrl: currentUser.photoURL || '/images/profile_placeholder.png',
+      comments_count: 0, //Added by IQ - Count Comment
       time: getCurrentTime()
     }).then(function() {
       // Clear message text field and SEND button state.
