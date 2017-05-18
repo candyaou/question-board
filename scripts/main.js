@@ -75,8 +75,8 @@ FriendlyChat.prototype.loadMessages = function() {
     if(this.messagesRef.key != "messages") {
     	this.displayMessage(data.key, val.name, val.text, val.photoUrl, val.imageUrl, val.time);
     	//Update Comment Count for Post Message
-    	this.database.ref('messages/'+this.messagesRef.key+'/comments_count').set(this.messageList.children.length-1);
-    	setCookie(this.messagesRef.key,this.messageList.children.length-1,365);
+    	this.database.ref('messages/'+this.messagesRef.key+'/comments_count').set(this.messageList.children.length-2);
+    	setCookie(this.messagesRef.key,this.messageList.children.length-2,365);
     }
     else{
     	// Show comment count in Post Message
@@ -107,16 +107,27 @@ FriendlyChat.prototype.saveMessage = function(e) {
   if (this.messageInput.value && this.checkSignedInWithMessage()) {
     var currentUser = this.auth.currentUser;
     // Add a new message entry to the Firebase Database.
+    var inputText = this.messageInput.value; //Added by IQ - use InputText
     this.messagesRef.push({
       name: currentUser.displayName,
-      text: this.messageInput.value,
+      text: inputText, //Edited by IQ - use InputText instead
       photoUrl: currentUser.photoURL || '/images/profile_placeholder.png',
       comments_count: 0, //Added by IQ - Count Comment
       time: getCurrentTime()
-    }).then(function() {
-      // Clear message text field and SEND button state.
-      FriendlyChat.resetMaterialTextfield(this.messageInput);
-      this.toggleButton();
+    }).then(function( newMsg ) { // Edit by IQ - Add newMsg parameter
+	  // Clear message text field and SEND button state.
+	  FriendlyChat.resetMaterialTextfield(this.messageInput);
+	  this.toggleButton();
+	  // Added by IQ - Add initial comment by default for Post Message
+	  if(this.messagesRef.key == "messages") {
+	  	this.database.ref('questionboard/'+newMsg.key).push({
+	      name: currentUser.displayName,
+	      text: inputText,
+	      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png',
+	      comments_count: 0,
+	      time: getCurrentTime()
+	    })
+	  }
     }.bind(this)).catch(function(error) {
       console.error('Error writing new message to Firebase Database', error);
     });
