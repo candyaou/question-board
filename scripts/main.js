@@ -82,7 +82,13 @@ FriendlyChat.prototype.loadMessages = function() {
     	// Show comment count in Post Message
     	var hasRead = getCookie(data.key);
     	var contentText = val.text + ' (' + val.comments_count + ')';
-    	this.displayMessage(data.key, val.name, contentText, val.photoUrl, val.imageUrl, val.time, (val.comments_count-hasRead));
+    	if(hasRead==-1) {
+    		//New Thread
+    		this.displayMessage(data.key, val.name, contentText, val.photoUrl, val.imageUrl, val.time, -1);
+    	}
+    	else { 
+    		this.displayMessage(data.key, val.name, contentText, val.photoUrl, val.imageUrl, val.time, (val.comments_count-hasRead));
+    	}
     }
   }.bind(this);
   // Edited by IQ - No Limit
@@ -120,6 +126,11 @@ FriendlyChat.prototype.saveMessage = function(e) {
 	  this.toggleButton();
 	  // Added by IQ - Add initial comment by default for Post Message
 	  if(this.messagesRef.key == "messages") {
+	  	setCookie(newMsg.key,0,365);
+	  	//Reload for unseen thread
+	  	this.database.ref('messages/'+newMsg.key+'/comments_count').set(-1);
+	  	this.database.ref('messages/'+newMsg.key+'/comments_count').set(0);
+	  	//Add initial Comment
 	  	this.database.ref('questionboard/'+newMsg.key).push({
 	      name: currentUser.displayName,
 	      text: inputText,
@@ -343,11 +354,15 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
     messageElement.textContent = text;
     // Replace all line breaks by <br>.
     messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
+
     //Added by IQ - Show new-message Notification
+    if(newMessage==-1)
+    	messageElement.innerHTML = '<b>' + messageElement.innerHTML + '</b>';
     if(newMessage>1)
     	messageElement.innerHTML += ' <b>' + newMessage + ' new messages</b>';
     else if(newMessage>0)
     	messageElement.innerHTML += ' <b>' + newMessage + ' new message</b>';
+
   } else if (imageUri) { // If the message is an image.
     var modal_image = document.createElement('img');
     var act_image = document.createElement('img');
@@ -449,5 +464,5 @@ function getCookie(cname) {
             return parseInt(c.substring(name.length, c.length));
         }
     }
-    return 0;
+    return -1;
 }
