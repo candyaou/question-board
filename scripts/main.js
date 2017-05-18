@@ -75,14 +75,20 @@ FriendlyChat.prototype.loadMessages = function() {
     if(this.messagesRef.key != "messages") {
     	this.displayMessage(data.key, val.name, val.text, val.photoUrl, val.imageUrl, val.time);
     	//Update Comment Count for Post Message
-    	this.database.ref('messages/'+this.messagesRef.key+'/comments_count').set(this.messageList.children.length-1);
-    	setCookie(this.messagesRef.key,this.messageList.children.length-1,365);
+    	this.database.ref('messages/'+this.messagesRef.key+'/comments_count').set(this.messageList.children.length-2);
+    	setCookie(this.messagesRef.key,this.messageList.children.length-2,365);
     }
     else{
     	// Show comment count in Post Message
     	var hasRead = getCookie(data.key);
     	var contentText = val.text + ' (' + val.comments_count + ')';
-    	this.displayMessage(data.key, val.name, contentText, val.photoUrl, val.imageUrl, val.time, (val.comments_count-hasRead));
+    	if(hasRead==-1) {
+    		//New Thread
+    		this.displayMessage(data.key, val.name, contentText, val.photoUrl, val.imageUrl, val.time, -1);
+    	}
+    	else { 
+    		this.displayMessage(data.key, val.name, contentText, val.photoUrl, val.imageUrl, val.time, (val.comments_count-hasRead));
+    	}
     }
   }.bind(this);
   // Edited by IQ - No Limit
@@ -107,16 +113,32 @@ FriendlyChat.prototype.saveMessage = function(e) {
   if (this.messageInput.value && this.checkSignedInWithMessage()) {
     var currentUser = this.auth.currentUser;
     // Add a new message entry to the Firebase Database.
+    var inputText = this.messageInput.value; //Added by IQ - use InputText
     this.messagesRef.push({
       name: currentUser.displayName,
-      text: this.messageInput.value,
+      text: inputText, //Edited by IQ - use InputText instead
       photoUrl: currentUser.photoURL || '/images/profile_placeholder.png',
       comments_count: 0, //Added by IQ - Count Comment
       time: getCurrentTime()
-    }).then(function() {
-      // Clear message text field and SEND button state.
-      FriendlyChat.resetMaterialTextfield(this.messageInput);
-      this.toggleButton();
+    }).then(function( newMsg ) { // Edit by IQ - Add newMsg parameter
+	  // Clear message text field and SEND button state.
+	  FriendlyChat.resetMaterialTextfield(this.messageInput);
+	  this.toggleButton();
+	  // Added by IQ - Add initial comment by default for Post Message
+	  if(this.messagesRef.key == "messages") {
+	  	setCookie(newMsg.key,0,365);
+	  	//Reload for unseen thread
+	  	this.database.ref('messages/'+newMsg.key+'/comments_count').set(-1);
+	  	this.database.ref('messages/'+newMsg.key+'/comments_count').set(0);
+	  	//Add initial Comment
+	  	this.database.ref('questionboard/'+newMsg.key).push({
+	      name: currentUser.displayName,
+	      text: inputText,
+	      photoUrl: currentUser.photoURL || '/images/profile_placeholder.png',
+	      comments_count: 0,
+	      time: getCurrentTime()
+	    })
+	  }
     }.bind(this)).catch(function(error) {
       console.error('Error writing new message to Firebase Database', error);
     });
@@ -332,11 +354,15 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
     messageElement.textContent = text;
     // Replace all line breaks by <br>.
     messageElement.innerHTML = messageElement.innerHTML.replace(/\n/g, '<br>');
+
     //Added by IQ - Show new-message Notification
+    if(newMessage==-1)
+    	messageElement.innerHTML = '<b>' + messageElement.innerHTML + '</b>';
     if(newMessage>1)
     	messageElement.innerHTML += ' <b>' + newMessage + ' new messages</b>';
     else if(newMessage>0)
     	messageElement.innerHTML += ' <b>' + newMessage + ' new message</b>';
+
   } else if (imageUri) { // If the message is an image.
     var modal_image = document.createElement('img');
     var act_image = document.createElement('img');
@@ -438,5 +464,5 @@ function getCookie(cname) {
             return parseInt(c.substring(name.length, c.length));
         }
     }
-    return 0;
+    return -1;
 }
