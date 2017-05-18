@@ -361,7 +361,7 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
 
   // Show the card fading-in.
   setTimeout(function() {div.classList.add('visible')}, 1);
-  this.messageList.scrollTop = this.messageList.scrollHeight;
+  this.messageList.scrollTop = this.messageList.scrollHeight - this.messageList.scrollTop - this.messageList.scrollHeight;
   this.messageInput.focus();
 };
 
