@@ -313,7 +313,7 @@ if(filename == '/'){
 }
 if(filename == '/questionPost.html'){
   FriendlyChat.MESSAGE_TEMPLATE =
-    '<div class="message-container">' +
+    '<div class="message-container comment">' +
       '<div class="spacing"><div class="pic"></div></div>' +
       '<div class="message"></div>' +
       '<div class="name"></div>' +
