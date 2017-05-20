@@ -92,6 +92,13 @@ main, #messages-card {
   width: calc(100% - 40px);
   padding: 5px 0 5px 10px;
 }
+.message-container .message .new-message {
+  color: white;
+  background-color: grey;
+  padding-left: 2%;
+  padding-right: 2%;
+  border-radius: 4px;
+}
 .message-container .name {
   display: inline-block;
   width: 50%;

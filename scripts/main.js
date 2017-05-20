@@ -359,9 +359,9 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
     if(newMessage==-1)
     	messageElement.innerHTML = '<b>' + messageElement.innerHTML + '</b>';
     if(newMessage>1)
-    	messageElement.innerHTML += ' <b>' + newMessage + ' new messages</b>';
+    	messageElement.innerHTML += ' <b class="new-message">' + newMessage + ' new messages</b>';
     else if(newMessage>0)
-    	messageElement.innerHTML += ' <b>' + newMessage + ' new message</b>';
+    	messageElement.innerHTML += ' <b class="new-message">' + newMessage + ' new message</b>';
 
     //Added by IQ - Auto Link
     var urlRegex = /(?![^<]*>|[^<>]*<\/)((https?:)\/\/[a-z0-9&#=.\/\-?_]+)/gi; 
