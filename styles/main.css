@@ -71,13 +71,14 @@ main, #messages-card {
   width: 50px;
   height: 50px;
   background-size: 50px;
-  border-radius: 0;
+  border-radius: 30px;
 }
 .comment:first-of-type .message {
   color: #ff3860;
   font-size: 2rem;
   padding-top: 1rem;
   text-align: center;
+  line-height: 1.8rem;
 }
 .comment:first-of-type .name {
   display: none;
@@ -116,9 +117,9 @@ main, #messages-card {
 }
 .message-container .message .new-message {
   color: white;
-  background-color: grey;
-  padding: 1px 3px;
-  border-radius: 4px;
+  background-color: #C0C0C0;
+  padding: 1px 5px;
+  border-radius: 10px;
 }
 .message-container .name {
   display: inline-block;
