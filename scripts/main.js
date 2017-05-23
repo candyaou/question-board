@@ -81,7 +81,7 @@ FriendlyChat.prototype.loadMessages = function() {
     else{
     	// Show comment count in Post Message
     	var hasRead = getCookie(data.key);
-    	var contentText = val.text + ' ( Replies: ' + val.comments_count + ')';
+    	var contentText = val.text + ' ( Replies : ' + val.comments_count + ')';
     	if(hasRead==-1) {
     		//New Thread
     		this.displayMessage(data.key, val.name, contentText, val.photoUrl, val.imageUrl, val.time, -1);
