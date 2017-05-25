@@ -353,7 +353,18 @@ FriendlyChat.prototype.displayMessage = function(key, name, text, picUrl, imageU
   if (picUrl) {
     div.querySelector('.pic').style.backgroundImage = 'url(' + picUrl + ')';
   }
-  div.querySelector('.name').textContent = name;
+
+  if((name == "Santiphap Watcharasukchit") || (name == "Paspana Assarasee") || (name == "Sirawat Ngarmphandisorn")){
+    var nameElement = div.querySelector('.name');
+    nameElement.setAttribute('style','color: hsl(51,100%,45%);')
+    nameElement.textContent = ' '+name;
+    var crownIcon = document.createElement('img');
+    crownIcon.setAttribute('src','images/golden-crown.gif')
+    crownIcon.setAttribute('style','width: 14px; margin-bottom: 8px;')
+    nameElement.prepend(crownIcon);
+  }else{
+    div.querySelector('.name').textContent = name;
+  }
   var messageElement = div.querySelector('.message');
   if (text) { // If the message is text.
     messageElement.textContent = text;
